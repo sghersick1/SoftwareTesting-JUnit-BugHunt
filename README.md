@@ -29,13 +29,10 @@ Student-Athletes are required to spend atleast **8 hours p/week** in the study. 
 
 ### Assumptions
 - Students will be signed in/signed out in real-time. This means **no chance of overlapping sessions** by "creating a session" manually
-- Administrators have a constant, prebuilt array of deadlines (every thursday for the semester)
-- Student requirements are constant (Hours p/week, Max Hours p/day, Max Usable Bank Hours p/week)
-- Attributes passed to Admin are valid
+- Administrators have a constant, valid, prebuilt array of deadlines (every thursday for the semester)
+- Student requirements are constant and valid (Hours p/week, Max Hours p/day, Max Usable Bank Hours p/week)
 - Admin recalculates student progress after each session ends (chronological order)
-
-### Out of Scope
-- Holidays and shortened weeks (we will treat them as normal)
+- No holidays or shortened weeks (we will treat all weeks equally)
 
 ---
 
