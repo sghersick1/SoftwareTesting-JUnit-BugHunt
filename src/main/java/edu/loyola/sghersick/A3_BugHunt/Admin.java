@@ -85,5 +85,11 @@ public class Admin {
 		
 		admin.printStudentRecord(student, deadlines);
 		ArrayList<Student> slackers = admin.getInProgressStudents(deadlines[10]);
+		
+		// Print slackers
+		for(Student s : slackers) {
+			System.out.println(s);
+		}
+		
 	}
 }
