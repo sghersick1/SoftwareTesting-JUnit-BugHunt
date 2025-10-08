@@ -44,7 +44,7 @@ public class Student {
 	 */
 	public void signIn(LocalDateTime time) {
 		if(activeSession != null) {
-			throw new IllegalStateException("Current session already in progress");
+			throw new IllegalStateException("CANNOT SIGN IN: Current session already in progress");
 		}
 		
 		// Create active session
@@ -57,12 +57,11 @@ public class Student {
 	 */
 	public void signOut(LocalDateTime time) {
 		if(activeSession == null) {
-			throw new IllegalStateException("There is not a current session");
+			throw new IllegalStateException("CANNOT SIGN OUT: There is not a current session");
 		}
 		
 		// Record date for organizing session in HashMap
 		LocalDate sDate = time.toLocalDate();
-		
 		
 		activeSession.checkOut(time);
 		Session sCopy = activeSession.clone(); // Shallow copy
@@ -99,13 +98,17 @@ public class Student {
 	
 	/**
 	 * Calculate hours during week until deadline (inclusive)
-	 * @param deadline date 
+	 * @param deadline date (whole day included in calculated week)
+	 * @param quantity required p/week
+	 * @param maximum hours p/week that can go toward hoursRequired
+	 * @param maximum hours p/day before excess goes into bank
+	 * @return number of hours remaining for this specific week
 	 */
 	public double hoursRemaining(LocalDate deadline, double hoursRequired, double maxBank, double maxDayHours) {
-		// Hours Remaining for this week
+		// Track required hours remaining
 		double hoursRemaining = hoursRequired;
 		
-		// Subtract banked hours (up to maxBank)
+		// Apply banked hours, up to maxBank
 		if(bankedHours >= maxBank) {
 			hoursRemaining -= maxBank;
 			bankedHours -= maxBank;
@@ -114,27 +117,28 @@ public class Student {
 			bankedHours = 0;
 		}
 		
-		// Track hours per day, add any hours exceeding "maxDayHours" to bank
+		// Loop through each Day
 		for(Map.Entry<LocalDate, ArrayList<Session>> set : sessionHist.entrySet()) {
-			int dateCmp = deadline.compareTo(set.getKey());
-			System.out.println(deadline+" -> "+set.getKey()+" comparison = "+dateCmp);
+			// Check that current day is within deadline week
+			LocalDate sessionDate = set.getKey();
+			boolean inWeek = sessionDate.compareTo(deadline) <= 0 && sessionDate.compareTo(deadline.minusDays(7)) > 0;
 			
-			// Check that current day is within past week
-			if(dateCmp >= 0 && dateCmp < 7) {
+			if(inWeek) {
 				double dayHours = 0;
 				
+				// Loop through each session
 				for(Session s : set.getValue()) {
 					dayHours += s.calcDuration();
 				}
 				
-				// Exceeded Day Hours
-				if(dayHours > 4.0) { 
-					bankedHours += dayHours-4.0;
-					dayHours = 4;
+				// Check exceeding daily max hours
+				if(dayHours > maxDayHours) { 
+					bankedHours += dayHours-maxDayHours;
+					dayHours = maxDayHours;
 				}
 				
-				// Exceed Week Hours
-				if(dayHours > hoursRemaining) { // Week
+				// Apply daily hours towards required hours p/week
+				if(dayHours > hoursRemaining) {
 					hoursRemaining = 0;
 					bankedHours += dayHours-hoursRemaining;
 				}else {
@@ -143,8 +147,7 @@ public class Student {
 			}
 		}
 		
-		System.out.println("\nHours Remaining: "+hoursRemaining+"\nBankedHours: "+bankedHours);
-		return hoursRemaining; 
+		return hoursRemaining;
 	}
 	
 	public static void main(String[] args) {
@@ -158,7 +161,7 @@ public class Student {
 		HashMap<LocalDateTime, LocalDateTime> sesh = new HashMap<>();
 		
 		// Sign-in & sign-out test values
-		sesh.put(LocalDateTime.of(2025, 10, 3, 10, 45), LocalDateTime.of(2025, 10, 3, 12, 45));
+		sesh.put(LocalDateTime.of(2025, 10, 2, 10, 45), LocalDateTime.of(2025, 10, 2, 12, 45));
 		sesh.put(LocalDateTime.of(2025, 10, 3, 15, 45), LocalDateTime.of(2025, 10, 3, 16, 15));
 		sesh.put(LocalDateTime.of(2025, 10, 9, 15, 45), LocalDateTime.of(2025, 10, 9, 20, 15));
 		
