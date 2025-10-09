@@ -37,7 +37,7 @@ public class Session
     }
     
     /**
-     * 
+     * Get date of session
      */
     public LocalDate getDate() {
     	return checkOut.toLocalDate();

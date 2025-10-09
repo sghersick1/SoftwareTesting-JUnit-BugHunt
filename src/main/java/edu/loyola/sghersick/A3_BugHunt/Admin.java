@@ -20,7 +20,6 @@ public class Admin {
 		this.maxDayHours = maxDayHours;
 	}
 	
-	// Other Methods
 	/**
 	 * Get Map of each slacker, and they're hour requirements for deadline
 	 * @param deadline
@@ -106,6 +105,8 @@ class Demo{
 		for(Map.Entry<Student, double[]> set : slackers.entrySet()) {
 			System.out.println(set.getKey()+" - hours complete: "+set.getValue()[0]+" - hours banked: "+set.getValue()[1]);
 		}
+		
+		// You can see here all 3 students got flagged, but "Sam Hersick" completed less hours than the other students
 	}
 }
 
