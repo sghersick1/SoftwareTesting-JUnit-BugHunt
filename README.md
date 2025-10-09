@@ -49,6 +49,19 @@ Student-Athletes are required to spend atleast **8 hours p/week** in the study. 
 In the real-world, students will walk up to the study desk, and an administrator will sign them in/out in real-time. For the scope of this project, administrators will just create sessions and add them to a user by id. This will ease in the testing process by allowing users to easily test different datetimes for session data instead of relying on real-time data (such as LocalDateTime.now()).
 
 ---
+## Use Cases
+```Exceed Max Daily Hours (4.0)
+**Student:**  
+ID: 101  
+Name: Sarah Miller  
+Sport: Swimming  
+
+**Sessions:**  
+- 2025-10-06  08:00 – 14:00  (6 hours)  
+
+**Week Hours = 4.0 hours**  
+**Banked Hours = 2.0 hours**```
+
 
 ## ⚙️ How to Run  
 1. Clone the repository:
