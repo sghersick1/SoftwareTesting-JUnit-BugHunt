@@ -1,5 +1,6 @@
 package edu.loyola.sghersick.A3_BugHunt;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
@@ -9,40 +10,37 @@ public class Session
 	private LocalDateTime checkIn;
 	private LocalDateTime checkOut;
 	
-	// Constructors
-    public Session(LocalDateTime checkIn) {
-    	this.checkIn = checkIn;
-    	checkOut = null;
-    }
-    
+	// Constructor
     public Session(LocalDateTime checkIn, LocalDateTime checkOut) {
-    	this.checkIn = checkIn;
-    	this.checkOut = checkOut;
-    }
-        
-    // Other Methods
-    /**
-     * Create a shallow copy of "this" object
-     * @return shallow copy of object
-     */
-    public Session clone() {
-    	return new Session(checkIn, checkOut);
+    	if(!verifySession(checkIn, checkOut)) {
+    		throw new IllegalArgumentException("Invalid times");
+    	}
     }
     
     /**
-     * Check-in to "this" session
-     * @param time of action
+     * Verify a session is valid
+     * @param t1 start time
+     * @param t2 end time
+     * @return true if valid, else false
      */
-    public void checkIn(LocalDateTime time) {
-    	checkIn = time;
+    private boolean verifySession(LocalDateTime t1, LocalDateTime t2) {
+    	// check if either is null
+    	if(t1 == null || t2 == null) return false;
+    	// check-in after or same time as check-out
+    	if(t1.isAfter(t2) || t1.isEqual(t2)) return false;
+    	// check spanning multiple days
+    	if(!t1.toLocalDate().isEqual(t2.toLocalDate())) return false;
+    	
+    	checkIn = t1;
+    	checkOut = t2;
+    	return true;
     }
     
     /**
-     * Check-out from "this" session
-     * @param time of action
+     * 
      */
-    public void checkOut(LocalDateTime time) {
-    	checkOut = time;
+    public LocalDate getDate() {
+    	return checkOut.toLocalDate();
     }
     
     /** 
@@ -50,7 +48,7 @@ public class Session
      * @return session duration (hours) on success. Return negative on failure.
      */
     public double calcDuration() {
-	    long seconds = ChronoUnit.SECONDS.between(checkIn, checkOut);
+  	    long seconds = ChronoUnit.SECONDS.between(checkIn, checkOut);
 	    return seconds/3600.0;
     }
     

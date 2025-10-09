@@ -2,94 +2,110 @@ package edu.loyola.sghersick.A3_BugHunt;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 public class Admin {
-	// Constant Variables
-	final double REQUIRED_HOURS = 8.0;
-	final double BANKED_PER_WEEK = 4.0;
-	final double MAX_DAY_HOURS = 4.0;
-	
 	// Attributes
 	private ArrayList<Student> students;
+	private double hoursPerWeek;
+	private double maxDayHours;
 	
 	// Constructors
-	public Admin() {
-		students = null;
-	}
-	
-	public Admin(ArrayList<Student> students) {
+	public Admin(ArrayList<Student> students, double hoursPerWeek, double maxDayHours) {
 		this.students = (ArrayList<Student>) students.clone(); // shallow copy
+		this.hoursPerWeek = hoursPerWeek;
+		this.maxDayHours = maxDayHours;
 	}
 	
 	// Other Methods
 	/**
-	 * Print out weekly deadlines, and students hours remaining p/week
-	 * @param student to print
-	 * @param deadlines required weekly hours
+	 * Get Map of each slacker, and they're hour requirements for deadline
+	 * @param deadline
+	 * @return
 	 */
-	public void printStudentRecord(Student s, LocalDate[] deadlines) {
-		for(int i = 0; i < deadlines.length; i++) {
-			double hours = s.hoursRemaining(deadlines[i], REQUIRED_HOURS, BANKED_PER_WEEK, MAX_DAY_HOURS);
-			System.out.println("Week "+(i+1)+": "+deadlines[i]+"\n"+hours+" hours remaining\n");
-		}
-	}
-	
-	/**
-	 * Get list of students who haven't met weekly requirement for a deadline 
-	 * @param deadline for the week
-	 * @return students who haven't met required hours yet
-	 */
-	public ArrayList<Student> getInProgressStudents(LocalDate deadline){
-		ArrayList<Student> slackers = new ArrayList<Student>();
+	public HashMap<Student, double[]> getSlackers(LocalDate deadline){
+		HashMap<Student, double[]> slackers = new HashMap<>();
 		
-		for(Student s: students) {
-			if(s.hoursRemaining(deadline, REQUIRED_HOURS, BANKED_PER_WEEK, MAX_DAY_HOURS) > 0) {
-				slackers.add(s);
+		for(Student student: students) {
+			double[] studentHours = student.calculateWeekHours(deadline, hoursPerWeek, maxDayHours);
+			
+			if(studentHours[0] < hoursPerWeek) {
+				slackers.put(student, studentHours);
 			}
 		}
 		
 		return slackers;
 	}
 	
-	public static void main(String[] args) {
-		// Create list of deadlines (every Thursday)
-		LocalDate[] deadlines = new LocalDate[15];
-		LocalDate deadline = LocalDate.of(2025, 9, 11);
-		
-		for(int i=0; i < deadlines.length; i++) {
-			deadlines[i] = deadline;
-			deadline = deadline.plus(7, ChronoUnit.DAYS);
+	/**
+	 * Admin adds session to user by id
+	 * @param student's id
+	 * @param session to add
+	 */
+	public void addSession(int studentId, Session s) {
+		Student student = getStudentById(studentId);
+		if(s == null) {
+			throw new IllegalArgumentException("Student does not exist in system");
 		}
 		
-		// Test student
-		Student student = new Student(2027178, "Sam Hersick", SportsTeam.SWIMMING);
-		HashMap<LocalDateTime, LocalDateTime> sesh = new HashMap<>();
-				
-		// Sign-in & sign-out test values
-		sesh.put(LocalDateTime.of(2025, 10, 3, 10, 45), LocalDateTime.of(2025, 10, 3, 12, 45));
-		sesh.put(LocalDateTime.of(2025, 10, 3, 15, 45), LocalDateTime.of(2025, 10, 3, 16, 15));
-		sesh.put(LocalDateTime.of(2025, 10, 9, 15, 45), LocalDateTime.of(2025, 10, 9, 20, 15));
-			
-		// Create session for each test value
-		for(Map.Entry<LocalDateTime, LocalDateTime> set: sesh.entrySet()) {
-			student.signIn(set.getKey());
-			student.signOut(set.getValue());
+		student.addSession(s);
+	}
+	
+	/**
+	 * Return a student given their id
+	 * @param studentId
+	 * @return Student object when found, else null
+	 */
+	private Student getStudentById(int studentId) {
+		for(Student s: students) {
+			if(s.isId(studentId) == true) return s;
 		}
 		
-		Admin admin = new Admin(new ArrayList<Student>(Arrays.asList(student)));
-		
-		admin.printStudentRecord(student, deadlines);
-		ArrayList<Student> slackers = admin.getInProgressStudents(deadlines[10]);
-		
-		// Print slackers
-		for(Student s : slackers) {
-			System.out.println(s);
-		}
-		
+		return null;
 	}
 }
+
+// Demonstrate running logic
+class Demo{
+	// Valid Test Values
+	static final double REQUIRED_HOURS = 8.0;
+	static final double MAX_DAY_HOURS = 4.0;
+	static final LocalDate deadline = LocalDate.of(2025, 10, 9);
+
+	static final int studentID[] = {202717, 219753, 263254};
+	static final ArrayList<Student> students = new ArrayList<Student>(Arrays.asList(
+			new Student(studentID[0], "Sam Hersick", SportsTeam.SWIMMING),
+			new Student(studentID[1], "Tom McCarthy", SportsTeam.SOCCER),
+			new Student(studentID[2], "John Smith", SportsTeam.TENNIS)));
+	
+	public static void main(String[] args) {
+		// 1. Admin creates list of students
+		Admin admin = new Admin(students, REQUIRED_HOURS, MAX_DAY_HOURS);
+		
+		// 2. Admin add sessions for students (time in study)
+		ArrayList<Session> sessions = new ArrayList<>(Arrays.asList(
+				new Session(LocalDateTime.of(2025, 10, 3, 1, 00), LocalDateTime.of(2025, 10, 3, 10, 00)),
+				new Session(LocalDateTime.of(2025, 10, 4, 1, 00), LocalDateTime.of(2025, 10, 4, 2, 00)),
+				new Session(LocalDateTime.of(2025, 10, 7, 1, 00), LocalDateTime.of(2025, 10, 7, 3, 00))));
+		
+		// 3. Admin can add student sessions by id
+		for(int id : studentID) {
+			for(Session s: sessions) {
+				if(id != studentID[0]) admin.addSession(id, s); // Give 1 students, all 3 sessions
+			}
+		}
+		
+		// 4. Admin can check who HAS NOT met requirement
+		HashMap<Student, double[]> slackers = admin.getSlackers(deadline);
+		
+		// 5. Print out slackers
+		System.out.println(deadline+" ("+slackers.size()+"):");
+		for(Map.Entry<Student, double[]> set : slackers.entrySet()) {
+			System.out.println(set.getKey()+" - hours complete: "+set.getValue()[0]+" - hours banked: "+set.getValue()[1]);
+		}
+	}
+}
+
