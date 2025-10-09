@@ -33,6 +33,7 @@ Student-Athletes are required to spend atleast **8 hours p/week** in the study. 
 - Admin has **valid metrics** including: required hours, maximum day hours, student id's, and list of students
 - Admin may or may not create valid sessions (should throw error if invalid)
 - Student session's **will not be overlapping** (illogical)
+- Admin won't upload same student session multiple times (illogical)
 
 ---
 
