@@ -51,23 +51,11 @@ In the real-world, students will walk up to the study desk, and an administrator
 ---
 
 ## Use Cases
-#### Exceed Max Daily Hours (4.0)
-**Student:**  
-ID: 101  
-Name: Sarah Miller  
-Sport: Swimming  
-
-**Sessions:**  
-- 2025-10-06  08:00 – 14:00  (6 hours)  
-
-**Week Hours = 4.0 hours**  
-**Banked Hours = 2.0 hours**
-
 ### Student Completes Required Weekly Hours (8.0
 **Student:**  
 ID: 102  
 Name: Ethan Jones  
-Sport: Basketball  
+Sport: BASKETBALL  
 
 **Sessions:**  
 - 2025-10-03  09:00 – 11:00  (2 hours)  
@@ -77,11 +65,42 @@ Sport: Basketball
 **Week Hours = 8.0 hours**  
 **Banked Hours = 0.0 hours**
 
+### Exceed Max Daily Hours (4.0)
+**Student:**  
+ID: 101  
+Name: Sarah Miller  
+Sport: SWIMMING  
+
+**Sessions:**  
+- 2025-10-06  08:00 – 14:00  (6 hours)  
+
+**Week Hours = 4.0 hours**  
+**Banked Hours = 2.0 hours**
+
+### Student Exceeds Weekly Required Hours (8.0)
+**Student:**  
+ID: 104  
+Name: Marcus Reed  
+Sport: SOCCER  
+
+**Sessions:**  
+- 2025-10-01  09:00 – 11:00  (2 hours)  
+- 2025-10-03  12:00 – 15:00  (3 hours)  
+- 2025-10-05  14:00 – 17:00  (3 hours)
+- 2025-10-06  11:00 - 1:00   (2 hours)  
+
+**Total = 8.0 + (2.0 over)**  
+
+**Result:**  
+- Week Hours = 8.0 hours  
+- Banked Hours = 2.0 hours
+
+
 ### Invalid Session Creation
 **Student:**  
 ID: 103  
 Name: Lily Chen  
-Sport: Track & Field  
+Sport: TENNIS  
 
 **Invalid Session Input:**  
 - 2025-10-05  14:00 – 10:00  (Invalid – Check-Out Before Check-In)  
